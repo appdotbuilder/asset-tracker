@@ -1,8 +1,18 @@
+import { db } from '../db';
+import { driversTable } from '../db/schema';
 import { type Driver } from '../schema';
 
-export async function getDrivers(): Promise<Driver[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all drivers from the database.
-    // It should return drivers with their current status and vehicle assignment information.
-    return Promise.resolve([]);
-}
+export const getDrivers = async (): Promise<Driver[]> => {
+  try {
+    // Fetch all drivers from the database
+    const result = await db.select()
+      .from(driversTable)
+      .execute();
+
+    // Return drivers (no numeric conversions needed for this table)
+    return result;
+  } catch (error) {
+    console.error('Failed to fetch drivers:', error);
+    throw error;
+  }
+};

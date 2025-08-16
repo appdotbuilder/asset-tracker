@@ -1,17 +1,24 @@
+import { db } from '../db';
+import { driversTable } from '../db/schema';
 import { type CreateDriverInput, type Driver } from '../schema';
 
-export async function createDriver(input: CreateDriverInput): Promise<Driver> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is creating a new driver and persisting it in the database.
-    // It should validate the license number uniqueness and handle default status assignment.
-    return Promise.resolve({
-        id: 0, // Placeholder ID
+export const createDriver = async (input: CreateDriverInput): Promise<Driver> => {
+  try {
+    // Insert driver record
+    const result = await db.insert(driversTable)
+      .values({
         name: input.name,
         license_number: input.license_number,
-        phone: input.phone || null,
-        email: input.email || null,
-        status: input.status || 'active',
-        created_at: new Date(),
-        updated_at: new Date()
-    } as Driver);
-}
+        phone: input.phone ?? null,
+        email: input.email ?? null,
+        status: input.status ?? 'active'
+      })
+      .returning()
+      .execute();
+
+    return result[0];
+  } catch (error) {
+    console.error('Driver creation failed:', error);
+    throw error;
+  }
+};
